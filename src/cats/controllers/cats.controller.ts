@@ -3,25 +3,43 @@ import { Controller, Get, Header, HttpCode,
     Put, Delete, Res, HttpStatus } 
     from '@nestjs/common';
 import { Request, Response } from 'express';
-import { CreateCatDto, UpdateCatDto, ListAllEntities } from '../dtos/create-cat.dto'
+import { CreateCatDto, UpdateCatDto, ListAllEntities } from '../dtos/cat.dto';
+import { CatsService } from '../services/cats.service';
+import { Cat } from '../interfaces/cat.interface';
 
 @Controller('cats')
 export class CatsController {
 
+    constructor(private _catsService: CatsService) {}
+
     @Post()
     @HttpCode(201)
     create(@Res() res: Response, @Body() createCatDto: CreateCatDto): Response<any, Record<string, any>> {
-        return res.status(HttpStatus.CREATED).send();
+        
+        this._catsService.create(createCatDto);
+        return res.status(HttpStatus.CREATED).json({ message: 'Cat created successfully'});
     }
 
     @Get()
     findAll(@Res({ passthrough: true }) res: Response, @Query() query: ListAllEntities) : Response<any, Record<string, any>> {
-        return res.status(HttpStatus.OK).json([]);
+        return res.status(HttpStatus.OK).json(this._catsService.findAll());
     }
 
     @Get(':id')
-    findOne(@Param('id') id: string) : string {
-        return `This action return a #${id} cat`;
+    findOne(@Param('id') id: string, @Res() res: Response) {
+
+        const idNumber = parseInt(id);
+        if (isNaN(idNumber)) {
+            return res.status(HttpStatus.BAD_REQUEST).json({ message: 'Invalid id, must be a number'});
+        }
+        
+        const cat: Cat | undefined = this._catsService.findById(idNumber);
+
+        if (cat === undefined) {
+            return res.status(HttpStatus.NOT_FOUND).json( {message: 'Not found'} );
+        }
+
+        return res.status(HttpStatus.OK).json(cat);
     }
 
     @Put(':id')
