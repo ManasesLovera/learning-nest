@@ -1,11 +1,12 @@
 import { Controller, Get, Header, HttpCode, 
     Param, Post, Query, Redirect, Req, Body,
-    Put, Delete, Res, HttpStatus } 
+    Put, Delete, Res, HttpStatus, UseFilters } 
     from '@nestjs/common';
 import { Request, Response } from 'express';
 import { CreateCatDto, UpdateCatDto, ListAllEntities } from '../dtos/cat.dto';
 import { CatsService } from '../services/cats.service';
 import { Cat } from '../interfaces/cat.interface';
+import { HttpExceptionFilter } from 'src/http-exception.filter';
 
 @Controller('cats')
 export class CatsController {
@@ -13,7 +14,7 @@ export class CatsController {
     constructor(private _catsService: CatsService) {}
 
     @Post()
-    @HttpCode(201)
+    @UseFilters(HttpExceptionFilter)
     create(@Res() res: Response, @Body() createCatDto: CreateCatDto): Response<any, Record<string, any>> {
         
         this._catsService.create(createCatDto);
