@@ -4,6 +4,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { LoggerMiddleware, logger } from './logger.middleware';
 import { CatsController } from './cats/controllers/cats.controller';
+import { APP_FILTER } from '@nestjs/core';
 
 @Module({
   imports: [CatsModule],
