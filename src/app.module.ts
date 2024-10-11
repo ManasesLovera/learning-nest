@@ -5,11 +5,15 @@ import { AppService } from './app.service';
 import { LoggerMiddleware, logger } from './logger.middleware';
 import { CatsController } from './cats/controllers/cats.controller';
 import { APP_FILTER } from '@nestjs/core';
+import { HttpExceptionFilter } from './common/exception-filters/http-exception.filter';
 
 @Module({
   imports: [CatsModule],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, {
+    provide: APP_FILTER,
+    useClass: HttpExceptionFilter
+  }],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

@@ -6,7 +6,7 @@ import { Request, Response } from 'express';
 import { CreateCatDto, UpdateCatDto, ListAllEntities } from '../dtos/cat.dto';
 import { CatsService } from '../services/cats.service';
 import { Cat } from '../interfaces/cat.interface';
-import { HttpExceptionFilter } from 'src/http-exception.filter';
+import { HttpExceptionFilter } from 'src/common/exception-filters/http-exception.filter';
 
 @Controller('cats')
 export class CatsController {
