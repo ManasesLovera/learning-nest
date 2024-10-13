@@ -1,13 +1,14 @@
 import { Controller, Get, Header, HttpCode, 
     Param, Post, Query, Redirect, Req, Body,
     Put, Delete, Res, HttpStatus, UseFilters, 
-    ParseIntPipe} 
+    ParseIntPipe, UsePipes } 
     from '@nestjs/common';
 import { Request, Response } from 'express';
 import { CreateCatDto, UpdateCatDto, ListAllEntities } from '../dtos/cat.dto';
 import { CatsService } from '../services/cats.service';
 import { Cat } from '../interfaces/cat.interface';
 import { HttpExceptionFilter } from 'src/common/exception-filters/http-exception.filter';
+import { ZodValidationPipe, createCatSchema } from 'src/common/validation/validation.pipe';
 
 @Controller('cats')
 export class CatsController {
@@ -15,6 +16,7 @@ export class CatsController {
     constructor(private _catsService: CatsService) {}
 
     @Post()
+    @UsePipes(new ZodValidationPipe(createCatSchema))
     create(@Res() res: Response, @Body() createCatDto: CreateCatDto): Response<any, Record<string, any>> {
         
         this._catsService.create(createCatDto);
