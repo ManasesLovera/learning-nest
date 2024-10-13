@@ -32,7 +32,7 @@ export class CatsController {
     }
 
     @Get(':id')
-    findOne(@Param('id', ParseIntPipe) id: number, @Res() res: Response) {
+    findOne(@Param('id', new ParseIntPipe()) id: number, @Res() res: Response) {
         
         const cat: Cat | undefined = this._catsService.findById(id);
 
