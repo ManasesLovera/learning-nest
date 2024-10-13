@@ -1,14 +1,17 @@
 import { Controller, Get, Header, HttpCode, 
     Param, Post, Query, Redirect, Req, Body,
     Put, Delete, Res, HttpStatus, UseFilters, 
-    ParseIntPipe, UsePipes } 
+    ParseIntPipe, UsePipes, 
+    ValidationPipe} 
     from '@nestjs/common';
 import { Request, Response } from 'express';
-import { CreateCatDto, UpdateCatDto, ListAllEntities } from '../dtos/cat.dto';
+import CreateCatDto from '../dtos/create-cat.dto';
+import ListAllEntities from '../dtos/listall-cats.dto';
 import { CatsService } from '../services/cats.service';
 import { Cat } from '../interfaces/cat.interface';
 import { HttpExceptionFilter } from 'src/common/exception-filters/http-exception.filter';
 import { ZodValidationPipe, createCatSchema } from 'src/common/validation/validation.pipe';
+import UpdateCatDto from '../dtos/update-cat.dto';
 
 @Controller('cats')
 export class CatsController {
@@ -17,7 +20,7 @@ export class CatsController {
 
     @Post()
     @UsePipes(new ZodValidationPipe(createCatSchema))
-    create(@Res() res: Response, @Body() createCatDto: CreateCatDto): Response<any, Record<string, any>> {
+    create(@Res() res: Response, @Body(new ValidationPipe()) createCatDto: CreateCatDto): Response<any, Record<string, any>> {
         
         this._catsService.create(createCatDto);
         return res.status(HttpStatus.CREATED).json({ message: 'Cat created successfully'});
