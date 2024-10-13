@@ -1,6 +1,7 @@
 import { Controller, Get, Header, HttpCode, 
     Param, Post, Query, Redirect, Req, Body,
-    Put, Delete, Res, HttpStatus, UseFilters } 
+    Put, Delete, Res, HttpStatus, UseFilters, 
+    ParseIntPipe} 
     from '@nestjs/common';
 import { Request, Response } from 'express';
 import { CreateCatDto, UpdateCatDto, ListAllEntities } from '../dtos/cat.dto';
@@ -14,7 +15,6 @@ export class CatsController {
     constructor(private _catsService: CatsService) {}
 
     @Post()
-    @UseFilters(HttpExceptionFilter)
     create(@Res() res: Response, @Body() createCatDto: CreateCatDto): Response<any, Record<string, any>> {
         
         this._catsService.create(createCatDto);
@@ -27,24 +27,17 @@ export class CatsController {
     }
 
     @Get(':id')
-    findOne(@Param('id') id: string, @Res() res: Response) {
-
-        const idNumber = parseInt(id);
-        if (isNaN(idNumber)) {
-            return res.status(HttpStatus.BAD_REQUEST).json({ message: 'Invalid id, must be a number'});
-        }
+    findOne(@Param('id', ParseIntPipe) id: number, @Res() res: Response) {
         
-        const cat: Cat | undefined = this._catsService.findById(idNumber);
+        const cat: Cat | undefined = this._catsService.findById(id);
 
-        if (cat === undefined) {
-            return res.status(HttpStatus.NOT_FOUND).json( {message: 'Not found'} );
-        }
-
-        return res.status(HttpStatus.OK).json(cat);
+        return cat !== undefined 
+            ? res.status(HttpStatus.OK).json(cat)
+            : res.status(HttpStatus.NOT_FOUND).json( {message: 'Not found'} );
     }
 
     @Put(':id')
-    update(@Param('id') id: string, @Body() updateCatDto: UpdateCatDto) {
+    update(@Param('id', ParseIntPipe) id: number, @Body() updateCatDto: UpdateCatDto) {
         return `This action updates a #${id} cat`;
     }
 
